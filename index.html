@@ -1,0 +1,369 @@
+<!-- ---------------------------------------------------------------------- -->
+<!--               https://firebase-fingerprint.w3spaces.com/               -->
+<!-- ---------------------------------------------------------------------- -->
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <title>Timesheets - [FingerPrint Firebase]</title>
+  <link rel="icon" type="image/x-icon" href="https://firebase-fingerprint.w3spaces.com/img/favicon_firebase.png">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-database.js"></script>
+
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body class="w3-black" onload="document.getElementById('access').style.display='block'">
+
+  <!-- Login -->
+  <div id="access" class="modal">
+    <form class="modal-content animate" onsubmit="checkAccess()">
+      <div class="container">
+
+        <label for="uname"><b>Username</b></label>
+        <input id="uname" type="text" placeholder="Enter Username" name="uname" required autofocus>
+
+        <label for="psw"><b>Password</b></label>
+        <input id="psw" type="password" placeholder="Enter Password" name="psw" required>
+
+        <button id="login" type="submit">Login</button>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- Icon Bar (Sidebar - hidden on small screens) -->
+  <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <!-- Avatar image in top left corner -->
+    <img src="https://firebase-fingerprint.w3spaces.com/img/hacker_200_223.jpg" style="width:100%">
+    <a href="#" class="w3-bar-item w3-button w3-padding-large w3-black">
+      <i class="fa fa-home w3-xxlarge"></i>
+      <p>HOME</p>
+    </a>
+    <a href="#timekeeping" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+      <i class="fa fa-eye w3-xxlarge"></i>
+      <p>TIMEKEEPING</p>
+    </a>
+    <a href="#who" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+      <i class="fa fa-user w3-xxlarge"></i>
+      <p>WHO ?</p>
+    </a>
+    <a href="#worktime" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+      <i class="fa fa-envelope w3-xxlarge"></i>
+      <p>WORK TIME</p>
+    </a>
+  </nav>
+
+  <!-- Navbar on small screens (Hidden on medium and large screens) -->
+  <div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
+    <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small">
+      <a href="#" class="w3-bar-item w3-button" style="width:25% !important">HOME</a>
+      <a href="#timekeeping" class="w3-bar-item w3-button" style="width:25% !important">TIMEKEEPING</a>
+      <a href="#who" class="w3-bar-item w3-button" style="width:25% !important">WHO ?</a>
+      <a href="#worktime" class="w3-bar-item w3-button" style="width:25% !important">WORK TIME</a>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="w3-padding-large" id="main">
+    <!-- Header/Home -->
+    <header class="w3-container w3-padding-32 w3-center w3-black" id="home">
+      <h1 class="w3-jumbo"><span class="w3-hide-small">Hello, Admin</span>.</h1>
+      <p>Welcome to the [ FingerPrint Firebase ] project.</p>
+      <img src="https://firebase-fingerprint.w3spaces.com/img/hacker_623_1108.jpg" alt="admin" width="623"
+        height="1108">
+    </header>
+
+    <!-- Timekeeping Section -->
+    <div class="w3-content w3-justify w3-text-grey w3-padding-64" id="timekeeping">
+      <h2 class="w3-text-light-grey">About Project</h2>
+      <hr style="width:200px" class="w3-opacity">
+      <p>
+        Đôi lời về dự án này...
+        <br>
+        Nói ngắn gọn, đây là một dự án có chức năng "chấm công" cho nhân viên, cũng như theo dõi lượng người đi qua cửa.
+        Dự án gồm 3 phần chính: Phần cứng, Phần mềm và Cơ sở dữ liệu.
+        <br>
+      <ol>
+        <li>Trong đó, Phần cứng sử dụng bo mạch Arduino UNO, kết hợp với cảm biến Vân tay AS608 và ESP8266, đảm nhận
+          chức năng chính là đọc dữ liệu vân tay từ người dùng sau đó gửi cho ESP8266. Khi ESP8266 nhận được nó sẽ tính
+          toán và đẩy gói thông tin lên cơ sở dữ liệu Firebase. Ngoài ra UNO còn kết nối với Relay để kích Khóa từ cho
+          mở cửa trong một khoảng thời gian mỗi khi ai đó quét vân tay. Kết nối với bộ 3 Nút nhấn để thực hiện việc đăng
+          ký ID vân tay mới hoặc xóa vân tay. Và cuối cùng là Màn hình LCD và Còi Buzzer để tương tác cung cấp thông tin
+          cho người dùng trong quá trình thao tác cài đặt hay sử dụng.
+        </li>
+        <li>Cơ sở dữ liệu Firebase, đây là một tính năng của Google. Cho phép người dùng sử dụng tài khoản Google của
+          riêng họ để đăng ký tạo một cơ sở dữ liệu và sử dụng nó.</li>
+        <li>Về "Phần mềm" được chia thành 4 phần nhỏ, bao gồm:
+          <ul>
+            <li>Firmware UNO (.ino), chương trình cho UNO xử lý dữ liệu điều khiển từ các Nút nhấn và Cảm biến Vân tay,
+              sau đó tính toán và thực hiện những điều khiển phù hợp đến các thiết bị khác như Relay, Còi Buzzer và Màn
+              hình LCD.</li>
+            <li>Firmware ESP8266 (.ino), chương trình cho ESP8266 bắt dữ liệu từ UNO gửi tới rồi cập nhập thời gian
+              thực, tính toán và đóng gói dữ liệu để gửi lên Firebase.</li>
+            <li>Front-End Web (.html và .css), để tạo phần giao diện hiển thị trên trang Web.</li>
+            <li>Back-End Web (.js), xử lý các thao tác sử dụng từ người dùng trên Web để thực hiện một số tính năng như
+              gửi dữ liệu lên Firebase hoặc lấy dữ liệu từ Firebase cho hiển thị lên Web.</li>
+          </ul>
+        </li>
+      </ol>
+      </p>
+
+      <!-- ------------------------- User Manual -------------------------- -->
+
+      <h3 class="w3-padding-16 w3-text-light-grey">User Manual</h3>
+
+      <p class="w3-wide">Timekeeping</p>
+      <p class="w3-text-white">
+        Cung cấp cho người Quản lý (Admin) tổng quan về giờ giấc đi làm của mỗi nhân viên qua BẢNG CHẤM CÔNG
+        (Timesheets).
+      </p>
+      <div class="w3-white">
+        <div class="w3-dark-grey" style="height:28px;width:30%"></div>
+      </div>
+
+      <br>
+
+      <p class="w3-wide">Who?</p>
+      <p class="w3-text-white">
+        Cài đặt tên nhân viên cho mỗi ID vân tay tương ứng.
+      <ul>
+        <li>
+          <p class="w3-text-white">Nhập tên nhân viên vào hộp "Name".</p>
+        </li>
+        <li>
+          <p class="w3-text-white">Chọn số ID vân tay.</p>
+        </li>
+        <li>
+          <p class="w3-text-white">Nhấn "OK" để Web cập nhập lên Firebase.</p>
+        </li>
+      </ul>
+      </p>
+      <div class="w3-white">
+        <div class="w3-dark-grey" style="height:28px;width:60%"></div>
+      </div>
+
+      <br>
+
+      <p class="w3-wide">Work Time</p>
+      <p class="w3-text-white">
+        Điều chỉnh thời gian làm việc của công ty.
+      <ul>
+        <li>
+          <p class="w3-text-white">
+            Chọn thời gian bắt đầu đầu làm việc.<br>Sau đó nhấn "Submit" để Web cập nhập lên Firebase.
+          </p>
+        </li>
+        <li>
+          <p class="w3-text-white">
+            Chọn thời gian chuẩn bị nghỉ việc.<br>Sau đó nhấn "Submit" để Web cập nhập lên Firebase.
+          </p>
+        </li>
+      </ul>
+      </p>
+      <div class="w3-white">
+        <div class="w3-dark-grey" style="height:28px;width:90%"></div>
+      </div>
+
+      <!-- --------------------------- Members ---------------------------- -->
+
+      <h3 class="w3-padding-16 w3-text-light-grey">Project Members</h3>
+
+      <img src="https://firebase-fingerprint.w3spaces.com/img/avatar_1.jpg" alt="Avatar"
+        class="w3-left w3-circle w3-margin-right" style="width:80px">
+      <p><span class="w3-large w3-margin-right">Đồng Gang Thép.</span> Nhà tài trợ.</p>
+      <p>Đảm trách nhiệm ngoại giao với thầy cô và bơm tiền cho nhóm.</p>
+
+      <br>
+
+      <img src="https://firebase-fingerprint.w3spaces.com/img/avatar_2.jpg" alt="Avatar"
+        class="w3-left w3-circle w3-margin-right" style="width:80px">
+      <p><span class="w3-large w3-margin-right">Cao Đẳng Sư Phạm.</span> Biên tập viên.</p>
+      <p>Viết tài liệu, báo cáo.</p>
+
+      <br>
+
+      <img src="https://firebase-fingerprint.w3spaces.com/img/avatar_3.jpg" alt="Avatar"
+        class="w3-left w3-circle w3-margin-right" style="width:80px">
+      <p><span class="w3-large w3-margin-right">Mai Com Piu Tơ.</span> Nghiên cứu viên.</p>
+      <p>Tìm hiểu công nghệ Firebase và cách sử dụng.</p>
+
+      <br>
+
+      <img src="https://firebase-fingerprint.w3spaces.com/img/avatar_4.jpg" alt="Avatar"
+        class="w3-left w3-circle w3-margin-right" style="width:80px">
+      <p><span class="w3-large w3-margin-right">Công Tôn Sách.</span> Lập trình viên.</p>
+      <p>Gánh team cả phần cứng và phần mềm. Code ESP, code UNO, code Web, code hết.</p>
+
+      <!-- -------------------------- Timesheets -------------------------- -->
+
+      <h3 class="w3-padding-16 w3-text-light-grey">Timesheets</h3>
+
+      <div class="w3-row-padding" style="margin:0 -16px">
+        <table id="timesheets">
+          <tr>
+            <th class="w3-dark-grey w3-large w3-padding-16">1st</th>
+            <th class="w3-dark-grey w3-large w3-padding-16">Name</th>
+            <th class="w3-dark-grey w3-large w3-padding-16">ID</th>
+            <th class="w3-dark-grey w3-large w3-padding-16">Date</th>
+            <th class="w3-dark-grey w3-large w3-padding-16">Time</th>
+            <th class="w3-dark-grey w3-large w3-padding-16">Note</th>
+          </tr>
+          <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>          
+        </table>
+      </div>
+      <button onclick="reloadTable()">Reload Table</button>
+    
+      <!-- ---------------------------------------------------------------- -->
+
+      <!-- End Timekeeping -->
+    </div>
+
+    <!-- Who Section -->
+    <div class="w3-padding-64 w3-content" id="who">
+      <h2 class="w3-text-light-grey">Set Name</h2>
+      <hr style="width:200px" class="w3-opacity">
+
+      <!-- Begin -->
+      <div class="w3-row-padding" style="margin:0 -16px">
+        <form onsubmit="updateName()">
+          <!-- Name -->
+          <p><i class="fa fa-user-plus fa-fw w3-text-white w3-xxlarge w3-margin-right"></i> Name:</p>
+          <p><input id="set-name" class="w3-input w3-padding-16" type="text" placeholder="... enter Name here" required
+              name="set-name"></p>
+          <!-- ID -->
+          <p><i class="fa fa-vcard fa-fw w3-text-white w3-xxlarge w3-margin-right"></i> ID: (between 1 and 127)</p>
+          <p><input id="set-id" class="w3-input w3-padding-16" type="number" placeholder="... enter ID here" min="1"
+              max="127" required name="set-id">
+          </p>
+          <!-- Button -->
+          <p><i class="fa fa-cloud-upload fa-fw w3-text-white w3-xxlarge w3-margin-right"></i> Submit to Firebase.</p>
+          <p>
+            <button class="w3-button w3-light-grey w3-padding-large" type="submit">OK</button>
+          </p>
+        </form>
+      </div>
+      <!-- End -->
+    </div>
+
+    <!-- Work Time Section -->
+    <div class="w3-padding-64 w3-content w3-text-grey" id="worktime">
+      <h2 class="w3-text-light-grey">Set Work Time</h2>
+      <hr style="width:200px" class="w3-opacity">
+
+      <!-- Note about time -->
+      <div class="w3-row w3-center w3-padding-16 w3-section w3-light-grey">
+        <div class="w3-quarter w3-section">
+          <span class="w3-xlarge">23:59 - 00:00</span><br>
+          11:59PM - 12:00AM
+        </div>
+        <div class="w3-quarter w3-section">
+          <span class="w3-xlarge">00:59 - 01:00</span><br>
+          12:59AM - 01:00AM
+        </div>
+        <div class="w3-quarter w3-section">
+          <span class="w3-xlarge">11:59 - 12:00</span><br>
+          11:59AM - 12:00PM
+        </div>
+        <div class="w3-quarter w3-section">
+          <span class="w3-xlarge">12:59 - 13:00</span><br>
+          12:59PM - 01:00PM
+        </div>
+      </div>
+
+      <!-- Grid for time work tables -->
+      <div class="w3-row-padding" style="margin:0 -16px">
+        <div class="w3-half w3-margin-bottom">
+          <form onsubmit="updateOpen()">
+            <ul class="w3-ul w3-white w3-center w3-opacity w3-hover-opacity-off">
+              <li class="w3-dark-grey w3-xlarge w3-padding-32">Open</li>
+              <li class="w3-padding-16 w3-opacity" id="now-open">Now Open ...</li>
+              <li class="w3-padding-16">
+                <h2>
+                  <input class="w3-input w3-padding-16" style="text-align: center;" type="time" id="set-open" required
+                    name="set-open">
+                </h2>
+                <span class="w3-opacity">Office hours usually begin 9:00 AM.</span>
+              </li>
+              <li class="w3-light-grey w3-padding-24">
+                <button class="w3-button w3-white w3-padding-large w3-hover-black">Submit</button>
+              </li>
+            </ul>
+          </form>
+        </div>
+        <div class="w3-half">
+          <form onsubmit="updateClose()">
+            <ul class="w3-ul w3-white w3-center w3-opacity w3-hover-opacity-off">
+              <li class="w3-dark-grey w3-xlarge w3-padding-32">Close</li>
+              <li class="w3-padding-16 w3-opacity" id="now-close">Now Close ...</li>
+              <li class="w3-padding-16">
+                <h2>
+                  <input class="w3-input w3-padding-16" style="text-align: center;" type="time" id="set-close" required
+                    name="set-close">
+                </h2>
+                <span class="w3-opacity">Office hours usually finish 6:00 PM.</span>
+              </li>
+              <li class="w3-light-grey w3-padding-24">
+                <button class="w3-button w3-white w3-padding-large w3-hover-black">Submit</button>
+              </li>
+            </ul>
+          </form>
+        </div>
+        <!-- End Grid/Pricing tables -->
+      </div>
+      <!-- End -->
+    </div>
+
+    <!-- Footer. This section contains an ad for W3Schools Spaces. You can leave it to support us. -->
+    <footer class="w3-content w3-padding-64 w3-text-grey w3-xlarge">
+      <p class="w3-small">GOOD BYE, see you again!</p>
+
+      <!-- End footer -->
+    </footer>
+
+    <script src="script.js"></script>
+
+    <!-- END PAGE CONTENT -->
+  </div>
+
+</body>
+
+</html>
+
+
